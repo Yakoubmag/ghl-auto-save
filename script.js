@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        let data = {
+        let data = { // Déclare la variable data ici
             "firstName": document.querySelector("#full_name")?.value || "Inconnu",
             "email": document.querySelector('input[name="email"]')?.value || "no-email@example.com",
             "phone": phoneNumber
