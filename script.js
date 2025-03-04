@@ -1,123 +1,90 @@
+<script>
 document.addEventListener("DOMContentLoaded", function() {
     console.log("🚀 Script GoHighLevel chargé !");
 
-    // Configuration
-    const CONFIG = {
-        locationId: "l82KH9dQABB0801TlZAw",
-        apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2NhdGlvbl9pZCI6Imw4MktIOWRRQUJCMDgwMVRsWkF3IiwiY29tcGFueV9pZCI6IjR5QnJuME0zMVlnUUNRc1M2bEhxIiwidmVyc2lvbiI6MSwiaWF0IjoxNzAxMTkwNzMzMTIwLCJzdWIiOiJ1c2VyX2lkIn0.f736MY_Iiq47r_KLbtLCepyHVFBRoxv7F1eyzmDuQEY",
-        phoneSelector: "#phone",
-        nameSelector: "#full_name",
-        emailSelector: 'input[name="email"]'
-    };
+    const phoneField = document.querySelector("#phone");
+    const nameField = document.querySelector("#full_name");
+    const emailField = document.querySelector('input[name="email"]');
 
-    // 1. Initialisation des écouteurs d'événements
-    function initEventListeners() {
-        [CONFIG.phoneSelector, CONFIG.nameSelector, CONFIG.emailSelector].forEach(selector => {
-            const field = document.querySelector(selector);
-            if (field) {
-                field.addEventListener("input", checkAndSubmitForm);
-                console.log(`🔌 Écouteur activé pour : ${selector}`);
-            } else {
-                console.error(`❌ Champ introuvable : ${selector}`);
-            }
-        });
-
-        // Bloque la soumission classique du formulaire
-        const form = document.querySelector("form");
-        if (form) {
-            form.addEventListener("submit", function(e) {
-                e.preventDefault();
-                console.log("🛑 Soumission du formulaire bloquée");
-                saveToGHL();
-            });
-        }
+    if (!phoneField || !nameField || !emailField) {
+        console.error("❌ Un ou plusieurs champs (phone, full_name, email) sont introuvables !");
+        return;
     }
 
-    // 2. Fonction d'envoi à l'API
     function saveToGHL() {
-        const phoneField = document.querySelector(CONFIG.phoneSelector);
-        const nameField = document.querySelector(CONFIG.nameSelector);
-        const emailField = document.querySelector(CONFIG.emailSelector);
-
-        // Validation finale
-        if (!phoneField || !nameField || !emailField) {
-            console.error("❌ Champs manquants lors de l'envoi");
-            return;
-        }
-
         const phoneNumber = phoneField.value.replace(/\D/g, "");
-        
-        if (phoneNumber.length !== 10 || 
-            !nameField.value.trim() || 
-            !emailField.value.trim()) {
-            console.warn("⏳ Données incomplètes pour l'envoi");
+
+        // Vérification stricte
+        if (phoneNumber.length < 10) {
+            console.warn("❌ Numéro de téléphone incomplet !");
+            return;
+        }
+        if (!nameField.value.trim() || !emailField.value.trim()) {
+            console.warn("❌ Le nom ou l'email est manquant !");
             return;
         }
 
-        // Préparation des données
         const data = {
-            "firstName": nameField.value.trim(),
-            "email": emailField.value.trim(),
+            "firstName": nameField.value.trim() || "Inconnu",
+            "email": emailField.value.trim() || "no-email@example.com",
             "phone": phoneNumber,
-            "locationId": CONFIG.locationId
+            "locationId": "l82KH9dQABB0801TlZAw" // Ton locationId
         };
 
-        console.log("🚀 Début de l'envoi à GHL", data);
+        console.log("🚀 Envoi des données à GoHighLevel...", data);
 
-        // Envoi API
         fetch("https://rest.gohighlevel.com/v1/contacts/", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${CONFIG.apiKey}`,
+                "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`, // Ta clé API
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(data)
         })
         .then(response => {
-            if (!response.ok) throw new Error(`Erreur ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
             return response.json();
         })
         .then(result => {
-            console.log("✅ Contact sauvegardé", result);
-            alert("Enregistrement réussi !");
+            console.log("✅ Contact sauvegardé dans GHL", result);
+            // Optionnel : alert("Contact sauvegardé !");
         })
         .catch(error => {
-            console.error("❌ Erreur API", error);
-            alert("Échec de l'enregistrement");
+            console.error("❌ Erreur d’enregistrement dans GHL :", error);
         });
     }
 
-    // 3. Vérification en temps réel
+    // Vérifie à chaque frappe sur n’importe lequel des champs
     function checkAndSubmitForm() {
-        console.log("🔍 Vérification des champs...");
-        
-        const phoneField = document.querySelector(CONFIG.phoneSelector);
-        const nameField = document.querySelector(CONFIG.nameSelector);
-        const emailField = document.querySelector(CONFIG.emailSelector);
-
-        if (!phoneField || !nameField || !emailField) {
-            console.log("🕵️ Champs non trouvés");
-            return;
-        }
-
         const phoneNumber = phoneField.value.replace(/\D/g, "");
-        
-        console.log("📊 État actuel :", {
-            téléphone: `${phoneNumber} (${phoneNumber.length}/10)`,
-            nom: nameField.value.trim() ? "OK" : "MANQUANT",
-            email: emailField.value.trim() ? "OK" : "MANQUANT"
+        const isPhoneOK = (phoneNumber.length === 10);
+        const isNameOK = !!nameField.value.trim();
+        const isEmailOK = !!emailField.value.trim();
+
+        console.log("🕵️ Vérification formulaire : ", {
+            phoneNumber,
+            isPhoneOK,
+            name: nameField.value.trim(),
+            isNameOK,
+            email: emailField.value.trim(),
+            isEmailOK
         });
 
-        // Déclenchement automatique si validation OK
-        if (phoneNumber.length === 10 && 
-            nameField.value.trim() && 
-            emailField.value.trim()) {
-            console.log("🔥 Déclenchement automatique !");
+        // Si tous les champs sont corrects, envoi immédiat
+        if (isPhoneOK && isNameOK && isEmailOK) {
+            console.log("✅ Tous les champs sont remplis, envoi à GHL !");
             saveToGHL();
         }
     }
 
-    // Démarrage
-    initEventListeners();
-    checkAndSubmitForm(); // Première vérification
+    // Écoute "input" sur chacun des champs
+    [phoneField, nameField, emailField].forEach(champ => {
+        champ.addEventListener("input", checkAndSubmitForm);
+    });
+
+    // Optionnel : vérifier dès le chargement
+    checkAndSubmitForm();
 });
+</script>
