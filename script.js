@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     console.log("🚀 Script GoHighLevel chargé !");
 
+    // Définition de la fonction saveToZapier
     window.saveToZapier = function() {
         let phoneField = document.querySelector("#phone");
         if (!phoneField) {
@@ -15,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        let data = { // Déclare la variable data ici
+        let data = { // Définition de la variable `data` ici
             "firstName": document.querySelector("#full_name")?.value || "Inconnu",
             "email": document.querySelector('input[name="email"]')?.value || "no-email@example.com",
             "phone": phoneNumber
