@@ -2,22 +2,28 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("🚀 Script GoHighLevel chargé !");
 
     window.saveToGHL = function() {
+        let nameField = document.querySelector("#full_name");
+        let emailField = document.querySelector('input[name="email"]');
         let phoneField = document.querySelector("#phone");
+
         if (!phoneField) {
             console.error("❌ Champ téléphone introuvable !");
             return;
         }
 
         let phoneNumber = phoneField.value.replace(/\D/g, ""); // Supprime tout sauf les chiffres
+        let firstName = nameField?.value.trim() || "";
+        let email = emailField?.value.trim() || "";
 
-        if (phoneNumber.length < 10) {
-            console.warn("❌ Numéro de téléphone incomplet !");
+        // ✅ Vérifier si les trois conditions sont remplies
+        if (firstName === "" || email === "" || phoneNumber.length < 10) {
+            console.warn("⚠️ En attente de toutes les informations obligatoires...");
             return;
         }
 
         let data = {
-            "firstName": document.querySelector("#full_name")?.value || "",
-            "email": document.querySelector('input[name="email"]')?.value || "",
+            "firstName": firstName,
+            "email": email,
             "phone": phoneNumber,
             "locationId": "l82KH9dQABB0801TlZAw"
         };
@@ -37,16 +43,28 @@ document.addEventListener("DOMContentLoaded", function() {
         .catch(error => console.error("❌ Erreur d’enregistrement :", error));
     };
 
-    // ✅ Déclenchement automatique dès que 10 chiffres sont entrés
-    let phoneField = document.querySelector("#phone");
-    if (phoneField) {
-        phoneField.addEventListener("input", function() {
-            let phoneNumber = this.value.replace(/\D/g, ""); // Nettoyer le numéro
+    // ✅ Déclencher `saveToGHL()` uniquement quand prénom, email et téléphone sont remplis
+    function checkAndSave() {
+        let nameField = document.querySelector("#full_name");
+        let emailField = document.querySelector('input[name="email"]');
+        let phoneField = document.querySelector("#phone");
 
-            if (phoneNumber.length >= 10) {
-                console.log("📞 Numéro détecté avec 10 chiffres : Enregistrement automatique !");
-                saveToGHL();
-            }
-        });
+        if (!nameField || !emailField || !phoneField) return;
+
+        let phoneNumber = phoneField.value.replace(/\D/g, "");
+        let firstName = nameField.value.trim();
+        let email = emailField.value.trim();
+
+        if (firstName !== "" && email !== "" && phoneNumber.length >= 10) {
+            console.log("✅ Toutes les informations sont remplies, enregistrement automatique !");
+            saveToGHL();
+        }
     }
+
+    // ✅ Ajouter des écouteurs d'événements aux trois champs
+    ["input", "change"].forEach(event => {
+        document.querySelector("#full_name")?.addEventListener(event, checkAndSave);
+        document.querySelector('input[name="email"]')?.addEventListener(event, checkAndSave);
+        document.querySelector("#phone")?.addEventListener(event, checkAndSave);
+    });
 });
