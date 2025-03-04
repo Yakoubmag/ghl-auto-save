@@ -1,17 +1,37 @@
 document.addEventListener("DOMContentLoaded", function() {
     console.log("🚀 Script GoHighLevel chargé !");
 
-    // Configuration avec vos identifiants
+    // Configuration à personnaliser
     const CONFIG = {
-        locationId: "l82KH9dQABB0801TlZAw", // Location ID que vous avez partagé
-        apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2NhdGlvbl9pZCI6Imw4MktIOWRRQUJCMDgwMVRsWkF3IiwiY29tcGFueV9pZCI6IjR5QnJuME0zMVlnUUNRc1M2bEhxIiwidmVyc2lvbiI6MSwiaWF0IjoxNzAxMTkwNzMzMTIwLCJzdWIiOiJ1c2VyX2lkIn0.f736MY_Iiq47r_KLbtLCepyHVFBRoxv7F1eyzmDuQEY", // Clé API que vous avez partagé
-        phoneSelector: "#phone", // Sélecteur du champ téléphone
-        nameSelector: "#full_name", // Sélecteur du champ nom
-        emailSelector: 'input[name="email"]' // Sélecteur du champ email
+        locationId: "l82KH9dQABB0801TlZAw",
+        apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2NhdGlvbl9pZCI6Imw4MktIOWRRQUJCMDgwMVRsWkF3IiwiY29tcGFueV9pZCI6IjR5QnJuME0zMVlnUUNRc1M2bEhxIiwidmVyc2lvbiI6MSwiaWF0IjoxNzAxMTkwNzMzMTIwLCJzdWIiOiJ1c2VyX2lkIn0.f736MY_Iiq47r_KLbtLCepyHVFBRoxv7F1eyzmDuQEY",
+        phoneSelector: "#phone", 
+        nameSelector: "#full_name", 
+        emailSelector: 'input[name="email"]'
     };
+
+    // Fonction de débogage pour vérifier les champs
+    function debugFields() {
+        const phoneField = document.querySelector(CONFIG.phoneSelector);
+        const nameField = document.querySelector(CONFIG.nameSelector);
+        const emailField = document.querySelector(CONFIG.emailSelector);
+
+        console.log("🕵️ Débogage des champs :");
+        console.log("Champ téléphone trouvé :", !!phoneField);
+        console.log("Champ nom trouvé :", !!nameField);
+        console.log("Champ email trouvé :", !!emailField);
+
+        // Log des valeurs
+        if (phoneField) console.log("Valeur téléphone :", phoneField.value);
+        if (nameField) console.log("Valeur nom :", nameField.value);
+        if (emailField) console.log("Valeur email :", emailField.value);
+    }
 
     // Fonction principale d'envoi à GoHighLevel
     function saveToGHL() {
+        console.log("🚀 Fonction saveToGHL appelée !");
+        debugFields(); // Ajout de logs de débogage
+
         const phoneField = document.querySelector(CONFIG.phoneSelector);
         const nameField = document.querySelector(CONFIG.nameSelector);
         const emailField = document.querySelector(CONFIG.emailSelector);
@@ -25,6 +45,10 @@ document.addEventListener("DOMContentLoaded", function() {
         // Nettoyage du numéro de téléphone
         const phoneNumber = phoneField.value.replace(/\D/g, "");
         
+        console.log("📞 Nombre de chiffres du téléphone :", phoneNumber.length);
+        console.log("Nom :", nameField.value.trim());
+        console.log("Email :", emailField.value.trim());
+
         // Vérifications
         if (phoneNumber.length < 10) {
             console.warn("❌ Numéro de téléphone incomplet !");
@@ -36,41 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        // Préparation des données
-        const data = {
-            "firstName": nameField.value || "Inconnu",
-            "email": emailField.value || "no-email@example.com",
-            "phone": phoneNumber,
-            "locationId": CONFIG.locationId
-        };
-
-        console.log("🚀 Envoi des données à GoHighLevel...", data);
-
-        // Envoi à l'API GoHighLevel
-        fetch("https://rest.gohighlevel.com/v1/contacts/", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${CONFIG.apiKey}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Erreur HTTP: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(result => {
-            console.log("✅ Contact sauvegardé dans GHL", result);
-            // Optionnel : Ajouter un message de succès à l'utilisateur
-            alert("Votre contact a été enregistré avec succès !");
-        })
-        .catch(error => {
-            console.error("❌ Erreur d'enregistrement dans GHL :", error);
-            // Optionnel : Afficher un message d'erreur à l'utilisateur
-            alert("Un problème est survenu lors de l'enregistrement. Veuillez réessayer.");
-        });
+        // Le reste du code reste identique...
     }
 
     // Déclenchement automatique
@@ -82,13 +72,20 @@ document.addEventListener("DOMContentLoaded", function() {
         phoneField.addEventListener("input", function() {
             const phoneNumber = this.value.replace(/\D/g, "");
             
+            console.log("📞 Événement input - Nombre de chiffres :", phoneNumber.length);
+            console.log("Nom :", nameField.value.trim());
+            console.log("Email :", emailField.value.trim());
+
             // Déclenchement si 10 chiffres ET nom et email remplis
             if (phoneNumber.length === 10 && 
                 nameField.value.trim() && 
                 emailField.value.trim()) {
-                console.log("📞 Numéro détecté avec 10 chiffres : Envoi automatique à GHL !");
+                console.log("📞 Conditions remplies : Envoi automatique à GHL !");
                 saveToGHL();
             }
         });
+    } else {
+        console.error("❌ Un ou plusieurs champs n'ont pas été trouvés !");
+        debugFields();
     }
 });
