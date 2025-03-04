@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
-    console.log("🚀 Script GoHighLevel chargé !");
+    console.log("🚀 Script GoHighLevel chargé et en attente d'entrée utilisateur...");
 
-    window.saveToGHL = function() {
+    function saveToGHL() {
         let nameField = document.querySelector("#full_name");
         let emailField = document.querySelector('input[name="email"]');
         let phoneField = document.querySelector("#phone");
@@ -15,9 +15,9 @@ document.addEventListener("DOMContentLoaded", function() {
         let firstName = nameField?.value.trim() || "";
         let email = emailField?.value.trim() || "";
 
-        // ✅ Vérifier si les trois conditions sont remplies
+        // ✅ Déclencher l'envoi uniquement si les trois champs sont remplis
         if (firstName === "" || email === "" || phoneNumber.length < 10) {
-            console.warn("⚠️ En attente de toutes les informations obligatoires...");
+            console.warn("⚠️ En attente des informations obligatoires...");
             return;
         }
 
@@ -41,9 +41,8 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(result => console.log("✅ Contact sauvegardé dans GHL", result))
         .catch(error => console.error("❌ Erreur d’enregistrement :", error));
-    };
+    }
 
-    // ✅ Déclencher `saveToGHL()` uniquement quand prénom, email et téléphone sont remplis
     function checkAndSave() {
         let nameField = document.querySelector("#full_name");
         let emailField = document.querySelector('input[name="email"]');
@@ -55,16 +54,20 @@ document.addEventListener("DOMContentLoaded", function() {
         let firstName = nameField.value.trim();
         let email = emailField.value.trim();
 
+        console.log(`🔍 Vérification des champs : Nom=${firstName}, Email=${email}, Téléphone=${phoneNumber}`);
+
         if (firstName !== "" && email !== "" && phoneNumber.length >= 10) {
             console.log("✅ Toutes les informations sont remplies, enregistrement automatique !");
             saveToGHL();
         }
     }
 
-    // ✅ Ajouter des écouteurs d'événements aux trois champs
+    // ✅ Ajouter des écouteurs sur les champs (événements `input` et `change`)
     ["input", "change"].forEach(event => {
         document.querySelector("#full_name")?.addEventListener(event, checkAndSave);
         document.querySelector('input[name="email"]')?.addEventListener(event, checkAndSave);
         document.querySelector("#phone")?.addEventListener(event, checkAndSave);
     });
+
+    console.log("📡 En attente des saisies utilisateur...");
 });
