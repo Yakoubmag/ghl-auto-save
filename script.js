@@ -21,9 +21,8 @@ document.addEventListener("DOMContentLoaded", function() {
             "phone": phoneNumber
         };
 
-        console.log("🚀 Envoi des données à Zapier...", data);
+        console.log("🚀 Envoi des données à Zapier...", data); // Affiche les données avant l'envoi
 
-        // Utilisation de CORS Anywhere pour contourner CORS
         fetch("https://cors-anywhere.herokuapp.com/https://hooks.zapier.com/hooks/catch/16715744/2q43id3/", {
             method: "POST",
             headers: {
@@ -44,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             if (phoneNumber.length === 10) { // Dès que 10 chiffres sont saisis
                 console.log("📞 Numéro détecté avec 10 chiffres : Envoi automatique à Zapier !");
-                saveToZapier(); // Envoi les données à Zapier
+                saveToZapier(); // Appel de saveToZapier()
             }
         });
     }
