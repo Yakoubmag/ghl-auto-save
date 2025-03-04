@@ -4,8 +4,11 @@ document.addEventListener("DOMContentLoaded", function() {
     // Fonction pour envoyer les données à GoHighLevel
     window.saveToGHL = function() {
         let phoneField = document.querySelector("#phone");
-        if (!phoneField) {
-            console.error("❌ Champ téléphone introuvable !");
+        let nameField = document.querySelector("#full_name");
+        let emailField = document.querySelector('input[name="email"]');
+
+        if (!phoneField || !nameField || !emailField) {
+            console.error("❌ Un ou plusieurs champs sont introuvables !");
             return;
         }
 
@@ -16,10 +19,16 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        // Vérifier que tous les champs sont remplis
+        if (!nameField.value.trim() || !emailField.value.trim()) {
+            console.warn("❌ Le nom ou l'email est manquant !");
+            return;
+        }
+
         // Récupérer les données du formulaire
         let data = {
-            "firstName": document.querySelector("#full_name")?.value || "Inconnu",
-            "email": document.querySelector('input[name="email"]')?.value || "no-email@example.com",
+            "firstName": nameField.value || "Inconnu",
+            "email": emailField.value || "no-email@example.com",
             "phone": phoneNumber,
             "locationId": "l82KH9dQABB0801TlZAw" // ID de ta localisation sur GoHighLevel
         };
@@ -42,13 +51,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Déclenchement automatique dès que 10 chiffres sont entrés dans le téléphone
     let phoneField = document.querySelector("#phone");
-    if (phoneField) {
+    let nameField = document.querySelector("#full_name");
+    let emailField = document.querySelector('input[name="email"]');
+
+    if (phoneField && nameField && emailField) {
         phoneField.addEventListener("input", function() {
             let phoneNumber = this.value.replace(/\D/g, ""); // Nettoyer le numéro
 
-            if (phoneNumber.length === 10) { // Dès que 10 chiffres sont saisis
+            // Déclenchement uniquement lorsque 10 chiffres sont entrés ET que le nom et l'email sont remplis
+            if (phoneNumber.length === 10 && nameField.value.trim() && emailField.value.trim()) {
                 console.log("📞 Numéro détecté avec 10 chiffres : Envoi automatique à GHL !");
-                saveToGHL(); // Appel de saveToGHL()
+                saveToGHL(); // Appel de saveToGHL() lorsque tout est rempli
             }
         });
     }
