@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", function() {
     console.log("🚀 Script GoHighLevel chargé !");
 
-    // Configuration à personnaliser
+    // Configuration avec vos identifiants
     const CONFIG = {
-        locationId: "VOTRE_LOCATION_ID", // Remplacez par votre Location ID
-        apiKey: "VOTRE_API_KEY", // Remplacez par votre clé API GoHighLevel
+        locationId: "l82KH9dQABB0801TlZAw", // Location ID que vous avez partagé
+        apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2NhdGlvbl9pZCI6Imw4MktIOWRRQUJCMDgwMVRsWkF3IiwiY29tcGFueV9pZCI6IjR5QnJuME0zMVlnUUNRc1M2bEhxIiwidmVyc2lvbiI6MSwiaWF0IjoxNzAxMTkwNzMzMTIwLCJzdWIiOiJ1c2VyX2lkIn0.f736MY_Iiq47r_KLbtLCepyHVFBRoxv7F1eyzmDuQEY", // Clé API que vous avez partagé
         phoneSelector: "#phone", // Sélecteur du champ téléphone
         nameSelector: "#full_name", // Sélecteur du champ nom
         emailSelector: 'input[name="email"]' // Sélecteur du champ email
