@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // Validation des champs
         if (!phoneField || !nameField || !emailField) {
             console.error("❌ Un ou plusieurs champs sont introuvables !");
-            return;
+            return false;
         }
 
         // Nettoyage du numéro de téléphone
@@ -28,12 +28,12 @@ document.addEventListener("DOMContentLoaded", function() {
         // Vérifications
         if (phoneNumber.length < 10) {
             console.warn("❌ Numéro de téléphone incomplet !");
-            return;
+            return false;
         }
 
         if (!nameField.value.trim() || !emailField.value.trim()) {
             console.warn("❌ Le nom ou l'email est manquant !");
-            return;
+            return false;
         }
 
         // Préparation des données
@@ -64,20 +64,25 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(result => {
             console.log("✅ Contact sauvegardé dans GHL", result);
             alert("Votre contact a été enregistré avec succès !");
+            return true;
         })
         .catch(error => {
             console.error("❌ Erreur d'enregistrement dans GHL :", error);
             alert("Un problème est survenu lors de l'enregistrement. Veuillez réessayer.");
+            return false;
         });
     }
 
-    // Fonction de vérification automatique
-    function checkFormCompletion() {
+    // Fonction de vérification périodique
+    function checkAndSubmitForm() {
         const phoneField = document.querySelector(CONFIG.phoneSelector);
         const nameField = document.querySelector(CONFIG.nameSelector);
         const emailField = document.querySelector(CONFIG.emailSelector);
 
-        if (!phoneField || !nameField || !emailField) return;
+        if (!phoneField || !nameField || !emailField) {
+            console.log("🕵️ Champs non trouvés");
+            return;
+        }
 
         const phoneNumber = phoneField.value.replace(/\D/g, "");
         
@@ -96,20 +101,9 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Écouteurs d'événements sur tous les champs
-    const phoneField = document.querySelector(CONFIG.phoneSelector);
-    const nameField = document.querySelector(CONFIG.nameSelector);
-    const emailField = document.querySelector(CONFIG.emailSelector);
+    // Vérification toutes les 15 secondes
+    setInterval(checkAndSubmitForm, 15000);
 
-    if (phoneField && nameField && emailField) {
-        // Ajout d'écouteurs sur plusieurs événements
-        phoneField.addEventListener("input", checkFormCompletion);
-        nameField.addEventListener("input", checkFormCompletion);
-        emailField.addEventListener("input", checkFormCompletion);
-        phoneField.addEventListener("change", checkFormCompletion);
-        nameField.addEventListener("change", checkFormCompletion);
-        emailField.addEventListener("change", checkFormCompletion);
-    } else {
-        console.error("❌ Un ou plusieurs champs n'ont pas été trouvés !");
-    }
+    // Première vérification immédiate
+    checkAndSubmitForm();
 });
